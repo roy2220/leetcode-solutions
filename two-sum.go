@@ -17,34 +17,22 @@ func twoSum(nums []int, target int) []int {
 
 
 func traverseCombinations(elements []int, combinationLength int, callback func ([]int) bool) bool {
-    elementIndex := 0
+    if combinationLength > len(elements) {
+        return false
+    }
+
     combination := []int{}
-    var doTraverseCombinations func () bool
+    var doTraverseCombinations func (int) bool
 
-    doTraverseCombinations = func () bool {
-        if len(combination) < combinationLength {
-            combination = append(combination, elementIndex)
-            var stop bool
-
-            if len(combination) == combinationLength {
-                stop = callback(combination)
-            } else {
-                elementIndex += 1
-                stop = doTraverseCombinations()
-                elementIndex -= 1
-            }
-
-            combination = combination[:len(combination) - 1]
-
-            if stop {
-                return true
-            }
+    doTraverseCombinations = func (i int) bool {
+        if len(combination) == combinationLength {
+            return callback(combination)
         }
 
-        if combinationLength - len(combination) < len(elements) - elementIndex {
-            elementIndex += 1
-            stop := doTraverseCombinations()
-            elementIndex -= 1
+        for ; i < len(elements) - (combinationLength - len(combination)) + 1; i++ {
+            combination = append(combination, i);
+            stop := doTraverseCombinations(i + 1)
+            combination = combination[0:len(combination)-1];
 
             if stop {
                 return true
@@ -54,5 +42,5 @@ func traverseCombinations(elements []int, combinationLength int, callback func (
         return false
     }
 
-    return doTraverseCombinations()
+    return doTraverseCombinations(0)
 }

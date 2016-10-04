@@ -1,4 +1,4 @@
-iimport (
+import (
     "sort"
     "fmt"
 )
@@ -6,19 +6,41 @@ iimport (
 
 func threeSum(nums []int) [][]int {
     result := [][]int{}
-    sort.Ints(nums)
+    m := map[int][]int{}
+
+    for idx, num := range nums {
+        if a, ok := m[num]; ok {
+            m[num] = append(a, idx)
+        } else {
+            m[num] = []int{idx}
+        }
+    }
+
     s := map[string]bool{}
 
-    traverseCombinations(nums, 3, func (combination []int) bool {
-        i, j, k := combination[0], combination[1], combination[2]
-        x, y, z := nums[i], nums[j], nums[k]
+    traverseCombinations(nums, 2, func (combination []int) bool {
+        i, j := combination[0], combination[1]
+        x, y := nums[i], nums[j]
+        z := -(x + y)
 
-        if x + y + z == 0 {
-            key := fmt.Sprintf("%d,%d,%d", x,y,z)
+        if a, ok := m[z]; ok {
+            f := len(a)
 
-            if !s[key] {
-                s[key] = true
-                result = append(result, []int{x, y, z})
+            for _, idx := range a {
+                if idx == i || idx == j {
+                    f--
+                }
+            }
+
+            if f >= 1 {
+                val := []int{x, y, z}
+                sort.Ints(val)
+                key := fmt.Sprintf("%v", val)
+
+                if !s[key] {
+                    s[key] = true
+                    result = append(result, val)
+                }
             }
         }
 
@@ -30,38 +52,22 @@ func threeSum(nums []int) [][]int {
 
 
 func traverseCombinations(elements []int, combinationLength int, callback func ([]int) bool) bool {
-    if len(elements) < combinationLength {
+    if combinationLength > len(elements) {
         return false
     }
 
-    elementIndex := 0
     combination := []int{}
-    var doTraverseCombinations func () bool
+    var doTraverseCombinations func (int) bool
 
-    doTraverseCombinations = func () bool {
-        if len(combination) < combinationLength {
-            combination = append(combination, elementIndex)
-            var stop bool
-
-            if len(combination) == combinationLength {
-                stop = callback(combination)
-            } else {
-                elementIndex += 1
-                stop = doTraverseCombinations()
-                elementIndex -= 1
-            }
-
-            combination = combination[:len(combination) - 1]
-
-            if stop {
-                return true
-            }
+    doTraverseCombinations = func (i int) bool {
+        if len(combination) == combinationLength {
+            return callback(combination)
         }
 
-        if combinationLength - len(combination) < len(elements) - elementIndex {
-            elementIndex += 1
-            stop := doTraverseCombinations()
-            elementIndex -= 1
+        for ; i < len(elements) - (combinationLength - len(combination)) + 1; i++ {
+            combination = append(combination, i);
+            stop := doTraverseCombinations(i + 1)
+            combination = combination[0:len(combination)-1];
 
             if stop {
                 return true
@@ -71,5 +77,5 @@ func traverseCombinations(elements []int, combinationLength int, callback func (
         return false
     }
 
-    return doTraverseCombinations()
+    return doTraverseCombinations(0)
 }

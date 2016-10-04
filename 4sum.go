@@ -1,18 +1,46 @@
-func threeSumClosest(nums []int, target int) int {
-    var result int
-    diff := int(^uint(0) >> 1)
+import (
+    "sort"
+    "fmt"
+)
+
+
+func fourSum(nums []int, target int) [][]int {
+    result := [][]int{}
+    m := map[int][]int{}
+
+    for idx, num := range nums {
+        if a, ok := m[num]; ok {
+            m[num] = append(a, idx)
+        } else {
+            m[num] = []int{idx}
+        }
+    }
+
+    s := map[string]bool{}
 
     traverseCombinations(nums, 3, func (combination []int) bool {
         i, j, k := combination[0], combination[1], combination[2]
-        s := nums[i] + nums[j] + nums[k]
-        new_diff := abs(s - target)
+        w, x, y := nums[i], nums[j], nums[k]
+        z := target - (w + x + y)
 
-        if new_diff < diff {
-            result = s
-            diff = new_diff
+        if a, ok := m[z]; ok {
+            f := len(a)
 
-            if diff == 0 {
-                return true
+            for _, idx := range a {
+                if idx == i || idx == j || idx == k {
+                    f--
+                }
+            }
+
+            if f >= 1 {
+                val := []int{w, x, y, z}
+                sort.Ints(val)
+                key := fmt.Sprintf("%v", val)
+
+                if !s[key] {
+                    s[key] = true
+                    result = append(result, val)
+                }
             }
         }
 
@@ -20,15 +48,6 @@ func threeSumClosest(nums []int, target int) int {
     })
 
     return result
-}
-
-
-func abs(x int) int {
-    if x < 0 {
-        return -x
-    } else {
-        return x
-    }
 }
 
 
