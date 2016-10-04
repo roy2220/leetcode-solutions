@@ -5,21 +5,19 @@ func longestValidParentheses(s string) int {
     f = func (i int) int {
         j := i
 
-        for {
-            if j >= len(s) || s[j] == ')' {
-                return j
-            } else {
-                j = f(j + 1) + 1
+        for j < len(s) && s[j] != ')' {
+            j = f(j + 1) + 1
 
-                if j <= len(s) {
-                    l := j - i
+            if j <= len(s) {
+                l := j - i
 
-                    if l > r {
-                        r = l
-                    }
+                if l > r {
+                    r = l
                 }
             }
         }
+
+        return j
     }
 
     i := f(0)
