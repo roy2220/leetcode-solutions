@@ -1,4 +1,4 @@
-<F5func searchRange(nums []int, target int) []int {
+func searchRange(nums []int, target int) []int {
     start := bsearch_first(nums, 0, len(nums) - 1, target)
     end := bsearch_last(nums, 0, len(nums) - 1, target)
     return []int{start, end}
