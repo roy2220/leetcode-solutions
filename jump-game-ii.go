@@ -1,18 +1,24 @@
 func jump(nums []int) int {
-    i := 0
-    j := -1
-    k := 0
+    i := -1
+    j := 0
     s := 0
 
-    for i = k + 1; i < len(nums); i = k + 1 {
-        s++
+    for j < len(nums) - 1 {
+        new_j := j
 
-        for l := j + 1; l < i; l++ {
-            if l + nums[l] > k {
-                j = l
-                k = l + nums[l]
+        for k := i + 1; k <= j; k++ {
+            if k + nums[k] > new_j {
+                i = k
+                new_j = k + nums[k]
             }
         }
+
+        if new_j == j {
+            return -1
+        }
+
+        j = new_j
+        s++
     }
 
     return s
